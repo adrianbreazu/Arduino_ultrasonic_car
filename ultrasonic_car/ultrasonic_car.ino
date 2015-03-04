@@ -11,26 +11,31 @@
 #define trigger  30 
 #define echo     31
 #define max_distance 400
-#define stop_distance 10
+#define stop_distance 20
+
 // Arduino pins for the shift register
 #define MOTORLATCH 12
 #define MOTORCLK 4
 #define MOTORENABLE 7
 #define MOTORDATA 8
+
 // These are used to set the direction of the bridge driver.
 #define MOTOR1_A 2
 #define MOTOR1_B 3
 #define MOTOR2_A 1
 #define MOTOR2_B 4
+
 // Arduino pins for the PWM signals.
 #define MOTOR1_PWM 11
 #define MOTOR2_PWM 3
 #define SERVO1_PWM 10
+
 // Codes for the motor function.
 #define FORWARD 1
 #define BACKWARD 2
 #define BRAKE 3
 #define RELEASE 4
+
 
 //define distance variable 
 int distance;
@@ -56,7 +61,7 @@ void setup() {
 void loop() {
   //stop engine & reset servo
   servo_1.write(90);
-  delay(1000);
+  delay(300);
 
   scan();
   first_distance = distance;
@@ -68,14 +73,14 @@ void loop() {
     Serial.println("Object detected STOP.");
     //if obstacole ahead go back and stop
     moveBack();
-    delay(1000);
+    delay(700);
     stopEngines();
   
     //make the read on right using the servo
     Serial.println("Move servo to the right");
     //move servo to the right
     servo_1.write(180);  
-    delay(500);
+    delay(300);
     // make another read on right side
     scan();
     right_distance = distance;
@@ -84,14 +89,14 @@ void loop() {
     Serial.println("Move servo to the left");
     //move servo to the left
     servo_1.write(0);  
-    delay(500);
+    delay(300);
     // make another read on left side
     scan();
     left_distance = distance;
 
     //reset servo to 90
     servo_1.write(90);  
-    delay(500);
+    delay(300);
 
     //comapre measurements and take the highest
     if (left_distance > right_distance) {
@@ -114,6 +119,10 @@ void loop() {
 void scan () {
 	unsigned int ping_time = sonar.ping();
 	distance = ping_time/US_ROUNDTRIP_CM;
+        // make sure we have a default distance
+        if (distance > 399) {
+          distance=399;
+        }
 	Serial.print("Object detected at : ");
 	Serial.print(distance);
 	Serial.println();
